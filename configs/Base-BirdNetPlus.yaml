@@ -1,0 +1,45 @@
+MODEL:
+  PIXEL_MEAN: [0., 0., 0.]
+  WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
+  MASK_ON: False
+  BACKBONE: 
+    NAME: "build_resnet_fpn_backbone"
+    FREEZE_AT: 0
+  RESNETS:
+    DEPTH: 50
+    OUT_FEATURES: ["res2", "res3", "res4"]
+  META_ARCHITECTURE: "GeneralizedRCNN"
+  FPN:
+    IN_FEATURES: ["res2", "res3", "res4"]
+  ROI_HEADS:
+    NUM_CLASSES: 3
+    NAME: "StandardROIHeads"
+    IN_FEATURES: ["p2", "p3", "p4"]
+  ROI_BOX_HEAD:
+    NAME: "FastRCNNConvFCHead"
+    NUM_FC: 2
+    POOLER_RESOLUTION: 7
+  RPN:
+    IN_FEATURES: ["p2", "p3", "p4"]
+  ANCHOR_GENERATOR:
+    SIZES: [[16, 48, 80]]
+INPUT:
+  MIN_SIZE_TRAIN: (700,)
+  MAX_SIZE_TRAIN: 1400
+  MIN_SIZE_TEST: 700
+  MAX_SIZE_TEST: 1400
+DATASETS:
+  TRAIN: ("birdview_train",)
+  TEST: ("birdview_val",)
+SOLVER:
+  BASE_LR: 0.01
+  STEPS: (17500, 22500)
+  MAX_ITER: 30000
+  IMS_PER_BATCH: 4 
+  CHECKPOINT_PERIOD: 2500
+OUTPUT_DIR: "./outputs"
+VIEWPOINT: True 
+ROTATED_BOX_TRAINING: True
+HEIGHT_TRAINING: True
+VIEWPOINT_RESIDUAL: True 
+VP_BINS: 12
