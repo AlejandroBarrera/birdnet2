@@ -1,6 +1,8 @@
 ﻿# BirdNet+: End-to-End 3D Object Detection in LiDAR Bird’s Eye View
 
-**IMAGES**
+![3D detections example](val_images/3D_000021.png)
+![BEV detections example](val_images/BEV_000021.png)
+
 [BirdNet+](https://arxiv.org/abs/2003.04188) software implements a state-of-the-art 3D object detection algorithm based only on LiDAR technology. It represents a clear advance on its predecessor, the [BirdNet](https://arxiv.org/abs/1805.01195). 
 Algorithm developed at [Intelligent Systems Laboratory](http://www.uc3m.es/islab), Universidad Carlos III de Madrid.
 
