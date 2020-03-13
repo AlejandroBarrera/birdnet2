@@ -1,5 +1,5 @@
 import os, sys
-from detectron2.config import get_cfg 
+from detectron2.config import get_cfg
 from detectron2.engine import default_setup
 import logging
 import numpy as np
@@ -11,19 +11,20 @@ from tools.birdview_detection_refiner import BirdviewDetectionRefiner
 from tools.utils_3d import _draw_projection_obstacle_to_cam
 from tools.object_3d import Object3d
 from tools.utils_calib import Calibration
-home = os.getenv('HOME')
+import os
+detectron2_root = os.getenv('DETECTRON_ROOT')
 
-config_path = '/home/abarrera/detectron2/configs/Base-BirdNetPlus.yaml'
-checkpoint_path = '/home/abarrera/detectron2/ITSC_2020_model.pth'
-BEV_im_path = '/home/abarrera/detectron2/demo/demo_img/000021.png'
-im_path = '/media/datasets/kitti/object/training/image_2/000021.png'
-calib_path = '/media/datasets/kitti/object/training/calib/000021.txt'
+config_path = os.path.join(detectron2_root, 'configs', 'Base-BirdNetPlus.yaml')
+checkpoint_path = os.path.join(detectron2_root, 'models', 'model_ITSC2020.pth')
+BEV_im_path = os.path.join(detectron2_root, 'demo', 'demo_img', '000021_bev.png')
+im_path = os.path.join(detectron2_root, 'demo', 'demo_img', '000021.png')
+calib_path = os.path.join(detectron2_root, 'demo', 'demo_img', '000021.txt')
 
 idclass3 = { 0:'Car', 1:'Pedestrian', 2:'Cyclist'}
 
 def prepareAnn(lbl, alpha, box, h=-1, w=-1, l=-1, x=-1000, y=-1000, z=-1000, ry=-10, score=None):
     ann = [
-       lbl, 
+       lbl,
        -1,
        -1,
        alpha,
@@ -31,12 +32,12 @@ def prepareAnn(lbl, alpha, box, h=-1, w=-1, l=-1, x=-1000, y=-1000, z=-1000, ry=
        h,w,l,
        x,y,z,
        ry
-    ]  
+    ]
     if score is not None:
         ann.append(score)
     strAnn = ' '.join([str(x) for x in ann])
     obj3d = Object3d(strAnn)
-     
+
     return ann, obj3d, strAnn
 
 def prepare_for_coco_detection_KITTI(instance, output_folder, filename, write, calib_file, vp, bins, vp_res, hwrot, height_training):
@@ -81,12 +82,12 @@ def prepare_for_coco_detection_KITTI(instance, output_folder, filename, write, c
 
         # After refinement
         ann = [
-               obj3d.kind_name, 
+               obj3d.kind_name,
                obj3d.truncated,
                obj3d.occluded,
                round(obj3d.alpha,6),
                round(bbox2D[0],6),round(bbox2D[1],6),round(bbox2D[2],6),round(bbox2D[3],6),
-               round(obj3d.height,6), round(obj3d.width,6), round(obj3d.length,6), 
+               round(obj3d.height,6), round(obj3d.width,6), round(obj3d.length,6),
                round(p[0][0],6), round(p[0][1],6), round(p[0][2],6), # Camera coordinates
                round(obj3d.yaw,6),
                obj3d.score, # DON'T ROUND IT
@@ -95,7 +96,7 @@ def prepare_for_coco_detection_KITTI(instance, output_folder, filename, write, c
         im_ann.append(ann)
         im_ann_obj.append(obj3d)
         strAnn = ' '.join([str(x) for x in ann])
-        
+
         if write:
             file_ann.write(strAnn+'\n')
     if write:
@@ -108,7 +109,7 @@ def main():
     cfg.merge_from_file(config_path)
     default_setup(cfg, None)
     cfg.MODEL.WEIGHTS = checkpoint_path
-    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5 
+    cfg.MODEL.ROI_HEADS.SCORE_THRESH_TEST = 0.5
     cfg.MODEL.ROI_HEADS.NMS_THRESH_TEST = 0.3
     predictor = DefaultPredictor(cfg)
 
