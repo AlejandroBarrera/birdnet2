@@ -64,21 +64,15 @@ This demo uses data from the [KITTI Vision Benchmark Suite](http://www.cvlibs.ne
 4. For validation use *python tools/val_net_BirdNetPlus.py* instead with as many arguments as you want. Please review the arguments carefully.
 
 
-### Citing BirdNet+
+### Citation
 
-If you use BirdNet+ in your research, please use the following BibTeX entry.
-
-> @misc{Barrera2020,
-    archivePrefix = {arXiv},
-    arxivId = {2003.04188},
-    author = {Barrera, Alejandro and Guindel, Carlos
-    and Beltrán, Jorge and García,
-    Fernando},
+If you use BirdNet+ in your research, please cite our work using the following BibTeX entry.
+```
+@misc{Barrera2020,
+    title = {{BirdNet+: End-to-End 3D Object Detection in LiDAR Bird's Eye View}},
+    author = {Barrera, Alejandro and Guindel, Carlos and Beltrán, Jorge and García, Fernando},
     booktitle = {arXiv:2003.04188 [cs.CV]},
-    eprint = {2003.04188},
-    title = {{BirdNet+: End-to-End 3D Object
-    Detection in LiDAR Bird's Eye View}},
     url = {http://arxiv.org/abs/2003.04188},
     year = {2020}
 }
-
+```
