@@ -61,7 +61,7 @@ bvres = 0.05
 velodyne_h = 1.73
 only_front = True
 # BEV images
-im_path = os.path.join(detectron2_root,'datasets/bv_kitti/bv_kitti/training/image_2') 
+im_path = os.path.join(detectron2_root,'datasets/bv_kitti/image') 
 gt_split_file = os.path.join(detectron2_root,'datasets/bv_kitti/lists/valsplit_chen.txt') # https://xiaozhichen.github.io/files/mv3d/imagesets.tar.gz
 
 def _read_imageset_file(path):

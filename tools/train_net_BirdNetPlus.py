@@ -38,7 +38,7 @@ def main(config_file, training_classes):
 
     # Registering datasets and different fields, it must be configured in yaml file
     nclasses = cfg.MODEL.ROI_HEADS.NUM_CLASSES
-    ann_data_dir = detectron2_root+'/datasets/bv_kitti/bv_kitti'
+    ann_data_dir = detectron2_root+'/datasets/bv_kitti'
     ann_out_dir = detectron2_root+'/datasets/bv_kitti/annotations'
     ann_val_file = detectron2_root+'/datasets/bv_kitti/lists/valsplit_chen.txt'
     ann_train_file = detectron2_root+'/datasets/bv_kitti/lists/trainsplit_chen.txt'

@@ -51,23 +51,17 @@ This demo uses data from the [KITTI Vision Benchmark Suite](http://www.cvlibs.ne
 |   |-- bv_kitti
 |   |   |-- annotations
 |   |   |   |-- {train,val} JSON files
-|   |   |-- images
-|   |   |   |-- BEV KITTI {train,val} images
 |   |   |-- lists
 |   |   |   |-- {train,val} splits
-|   |   |-- bv_kitti
-|   |   |   |-- training
-|   |   |   |   |-- calib
-|   |   |   |   |   |-- KITTI calibration files
-|   |   |   |   |-- image_2
-|   |   |   |   |   |-- BEV KITTI {train,val} images
-|   |   |   |   |-- label_2
-|   |   |   |   |   |-- BEV KITTI {train,val} labels
+|   |   |-- image
+|   |   |   |-- BEV KITTI {train,val} images
+|   |   |-- label
+|   |   |   |-- BEV KITTI {train,val} labels
+|   |   |-- calib
+|   |   |   |-- KITTI calibration files
 ```
-3. Launch *python tools/train_net_BirdNetPlus.py --config_file
-    Base-BirdNetPlus* with the parameters required inside of the
-    configuration file.
-4. For validation use *python tools/val_net_BirdNetPlus.py* instead with as many arguments as you want.
+3. Launch *python tools/train_net_BirdNetPlus.py --config_file Base-BirdNetPlus* with the parameters required inside of the configuration file. The annotations are generated automatically.
+4. For validation use *python tools/val_net_BirdNetPlus.py* instead with as many arguments as you want. Please review the arguments carefully.
 
 
 ### Citing BirdNet+

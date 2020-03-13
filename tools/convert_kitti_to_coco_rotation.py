@@ -89,14 +89,12 @@ def convert_kitti_training(data_dir, out_dir, val_file, train_file, only_eval_cl
     categories = ['Car', 'Van', 'Truck', 'Pedestrian', 'Person_sitting', 'Cyclist', 'Tram', 'Misc', 'DontCare']
     categories = [categories[idx] for idx in only_eval_classes]
     category_dict = {k:v for v,k in enumerate(categories)}
-    images_dir =  'image_2'
-    labels_dir = 'label_2'
+    images_dir = 'image'
+    labels_dir = 'label'
     calibs_dir = 'calib'
 
     img_id = 0
     ann_id = 0
-
-    data_set = 'training'
 
     strclasses = '' if len(only_eval_classes)==9 else ''.join([el[:3].lower() for el in categories])
     strrot = 'RB' if rbox else '' 
@@ -119,9 +117,9 @@ def convert_kitti_training(data_dir, out_dir, val_file, train_file, only_eval_cl
                 # Return always the same file to match with training script
                 return os.path.join(out_dir, '{}_annotations_kitti_{}_{}.json'.format('training', strclasses,strargs))
 
-        ann_dir = os.path.join(data_dir, data_set, labels_dir)
-        im_dir = os.path.join(data_dir, data_set, images_dir)
-        calib_dir = os.path.join(data_dir, data_set, calibs_dir)
+        ann_dir = os.path.join(data_dir, labels_dir)
+        im_dir = os.path.join(data_dir, images_dir)
+        calib_dir = os.path.join(data_dir, calibs_dir)
         print('Starting %s' % ann_dir)
         print('Starting %s' % im_dir)
 
