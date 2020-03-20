@@ -141,7 +141,8 @@ def fast_rcnn_inference_single_image(
                 box = torch.cat((box,angle))
                 rboxes.append(box)
             rboxes = torch.cat(rboxes).reshape(-1,5).to(vp_filtered.device)
-            keep = nms_rotated(rboxes, scores, nms_thresh)
+            #keep = nms_rotated(rboxes, scores, nms_thresh)
+            keep = batched_nms_rotated(rboxes, scores, filter_inds[:, 1], nms_thresh)
         else:
             boxes[:,:,2] = boxes[:,:,2] + boxes[:,:,0] #x2
             boxes[:,:,3] = boxes[:,:,3] + boxes[:,:,1] #y2

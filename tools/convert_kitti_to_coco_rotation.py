@@ -108,7 +108,7 @@ def convert_kitti_training(data_dir, out_dir, val_file, train_file, only_eval_cl
 
     for sub_set, subset_name in zip(subsets, subsets_files):
 
-        json_name = '{}_annotations_kitti_{}{}.json'.format(sub_set, strclasses,strargs)
+        json_name = '{}_annotations_kitti_{}_{}.json'.format(sub_set, strclasses,strargs)
         outfile_name = os.path.join(out_dir, json_name)
         if os.path.exists(outfile_name):
             print('File exists: '+str(outfile_name))

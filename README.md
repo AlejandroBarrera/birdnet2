@@ -44,7 +44,10 @@ This demo uses data from the [KITTI Vision Benchmark Suite](http://www.cvlibs.ne
 
 0. Follow the steps 1 and 2 from Quick Start.
 1. Download the training and validation splits [here](https://xiaozhichen.github.io/files/mv3d/imagesets.tar.gz).
-2. For the dataset, create a directory tree like:
+2. To train with [KITTI object detection dataset](http://www.cvlibs.net/datasets/kitti/eval_object.php):
+- Download the dataset.
+- Generate BEV KITTI images. The tool that we used can be found at [lidar_bev](https://github.com/beltransen/lidar_bev).
+- In DETECTRON_ROOT, arrange everything according to the directory tree below (We leave annotations folder empty for now):
 ```
 .
 |-- datasets
@@ -61,7 +64,7 @@ This demo uses data from the [KITTI Vision Benchmark Suite](http://www.cvlibs.ne
 |   |   |   |-- KITTI calibration files
 ```
 3. Launch *python tools/train_net_BirdNetPlus.py --config_file Base-BirdNetPlus* with the parameters required inside of the configuration file. The annotations are generated automatically.
-4. For validation use *python tools/val_net_BirdNetPlus.py* instead with as many arguments as you want. Please review the arguments carefully.
+4. For validation use *python tools/val_net_BirdNetPlus.py* instead with as many arguments as you want. Please review the arguments carefully. For the evaluation, we strongly recommend using an offline KITTI evaluator such as [eval_kitti](https://github.com/cguindel/eval_kitti) after obtaining the evaluation annotations.
 
 
 ### Citation
