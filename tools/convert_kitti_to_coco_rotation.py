@@ -70,6 +70,60 @@ def rad2angle(rad, bins):
     angle = (-rad)*180/math.pi
     return angle if angle > -bin_res else 180+angle # Half of the resolution (obtaining minimum error) because we need to match angle 0 with 180
 
+def obtain_bvbox(obj, calib, bvdata, bvres):
+    # Function to compute the bbox coordinates in BEV
+    # TODO: Merge with utils_3d._draw_projection_obstacle_to_cam
+
+    bv_image = np.array(bvdata)
+    bvrows, bvcols, _ = bv_image.shape
+
+    pv = calib.project_rect_to_velo(np.array([[obj['location_1'], obj['location_2'], obj['location_3']]]))
+    centroid = [round(num, 2) for num in pv[0][:2]] # Lidar coordinates
+
+    length = obj['dimensions_2']
+    width = obj['dimensions_3']
+    yaw = obj['rotation_y']
+
+    # Compute the four vertexes coordinates
+    corners = np.array([[centroid[0]-length/2., centroid[1]+width/2.],
+                        [centroid[0]+length/2., centroid[1]+width/2.],
+                        [centroid[0]+length/2., centroid[1]-width/2.],
+                        [centroid[0]-length/2., centroid[1]-width/2.]])
+
+    # Compute rotation matrix
+    c, s = np.cos(yaw), np.sin(yaw)
+    R = np.array([[c, -s], [s, c]])
+
+    # Rotate all corners at once by yaw
+    rotated_corners = np.dot(corners-centroid, R) + centroid
+
+    x1 = bvcols / 2 + min(-rotated_corners[:, 1]) / bvres
+    x2 = bvcols / 2 + max(-rotated_corners[:, 1]) / bvres
+    y1 = bvrows - max(rotated_corners[:, 0]) / bvres
+    y2 = bvrows - min(rotated_corners[:, 0]) / bvres
+
+    # Remove labels without points
+    roi = bv_image[int(y1):int(y2), int(x1):int(x2)]
+    nonzero = np.count_nonzero(np.sum(roi, axis=2))
+    if nonzero < 3: # Detection is doomed impossible with fewer than 3 points
+        return -1, -1, -1, -1
+    # TODO: Assign DontCare labels to objects with few points?
+
+    # Remove objects outside the BEV image
+    if x1 <= 0 and x2 <= 0 or \
+       x1 >= bvcols-1 and x2 >= bvcols-1 or \
+       y1 <= 0 and y2 <= 0 or \
+       y1 >= bvrows-1 and y2 >= bvrows-1:
+        return -1, -1, -1, -1  # Out of bounds
+
+    # Clip boxes to the BEV image
+    x1 = max(0, x1)
+    y1 = max(0, y1)
+    x2 = min(bvcols-1, x2)
+    y2 = min(bvrows-1, y2)
+
+    return x1, y1, x2, y2
+
 def convert_kitti_training(data_dir, out_dir, val_file, train_file, only_eval_classes, bins, viewpoint, vp_res, rdims, height_enc, bvres=0.05, rbox=False):
     """Convert from cityscapes format to COCO instance seg format - polygons"""
     subsets=list()
@@ -85,7 +139,6 @@ def convert_kitti_training(data_dir, out_dir, val_file, train_file, only_eval_cl
     print(subsets,subsets_files)
     only_eval_classes = only_eval_classes.split(',')
     only_eval_classes = [int(cl) for cl in only_eval_classes]
-    
     categories = ['Car', 'Van', 'Truck', 'Pedestrian', 'Person_sitting', 'Cyclist', 'Tram', 'Misc', 'DontCare']
     categories = [categories[idx] for idx in only_eval_classes]
     category_dict = {k:v for v,k in enumerate(categories)}
@@ -97,11 +150,11 @@ def convert_kitti_training(data_dir, out_dir, val_file, train_file, only_eval_cl
     ann_id = 0
 
     strclasses = '' if len(only_eval_classes)==9 else ''.join([el[:3].lower() for el in categories])
-    strrot = 'RB' if rbox else '' 
-    strrotDim = 'RD' if rdims else '' 
+    strrot = 'RB' if rbox else ''
+    strrotDim = 'RD' if rdims else ''
     strH = 'HC' if height_enc else ''
-    strVP = 'VP' if viewpoint else '' 
-    strVPr = 'r' if vp_res else '' 
+    strVP = 'VP' if viewpoint else ''
+    strVPr = 'r' if vp_res else ''
     strBINS = str(bins)
     strargs = [strrot,strrotDim,strH,strVP,strVPr,strBINS]
     strargs = ('').join(strargs)
@@ -167,22 +220,27 @@ def convert_kitti_training(data_dir, out_dir, val_file, train_file, only_eval_cl
                     label = category_dict.get(o,8) #Default value just in case
                     if (label != 7) and (label != 8) :
                         # print(obj['type'])
+
+                        bbox_xmin, bbox_ymin, bbox_xmax, bbox_ymax = obtain_bvbox(obj, calib, im, bvres)
+                        if bbox_xmin<0:
+                            continue
+
                         ann = {}
                         ann['id'] = ann_id
                         ann_id += 1
                         ann['image_id'] = image['id']
                         ann['category_id'] = label
                         boxes = np.empty((0, 4), dtype=np.float32)
-                        ann['bbox'] = [obj['bbox_xmin'], obj['bbox_ymin'], math.fabs(obj['bbox_xmax'] - obj['bbox_xmin']), math.fabs(obj['bbox_ymax'] - obj['bbox_ymin'])]
+                        ann['bbox'] = [bbox_xmin, bbox_ymin, math.fabs(bbox_xmax - bbox_xmin), math.fabs(bbox_ymax - bbox_ymin)]
                         if rbox:
                             rot = rad2angle(obj['rotation_y'],bins)
-                            ann['bbox'].append(rot)   
+                            ann['bbox'].append(rot)
                         # ONLY VALID FOR FRONTAL CAMERA (ONLY_FRONT PARAM)
                         p = calib.project_rect_to_velo(np.array([[obj['location_1'],obj['location_2'],obj['location_3']]]))
                         ann['height'] = [obj['dimensions_1']*255/3.0, ((p[0][2]+velodyne_h)+obj['dimensions_1']*0.5)*255/3.0]#(p[0][2]+velodyne_h)]#Not codificated ground
-                        ann['bbox3D'] = [(obj['bbox_xmin']+obj['bbox_xmax'])/2.,(obj['bbox_ymin']+obj['bbox_ymax'])/2., round(obj['dimensions_2']/bvres,3), round(obj['dimensions_3']/bvres,3)]                         # print('ann[bbox]',ann['bbox'])
-                        ann['segmentation'] = [[obj['bbox_xmin'], obj['bbox_ymin'], obj['bbox_xmin'], obj['bbox_ymax'], obj['bbox_xmax'], obj['bbox_ymax'], obj['bbox_xmax'], obj['bbox_ymin']]]
-                        ann['area'] = math.fabs(obj['bbox_xmax'] - obj['bbox_xmin']) * math.fabs(obj['bbox_ymax'] - obj['bbox_ymin'])
+                        ann['bbox3D'] = [(bbox_xmin+bbox_xmax)/2.,(bbox_ymin+bbox_ymax)/2., round(obj['dimensions_2']/bvres,3), round(obj['dimensions_3']/bvres,3)]
+                        ann['segmentation'] = [[bbox_xmin, bbox_ymin, bbox_xmin, bbox_ymax, bbox_xmax, bbox_ymax, bbox_xmax, bbox_ymin]]
+                        ann['area'] = math.fabs(bbox_xmax - bbox_xmin) * math.fabs(bbox_ymax - bbox_ymin)
                         ann['iscrowd'] = 0
                         if viewpoint:
                             ann['viewpoint'] = [rad2bin(obj['rotation_y'], bins),obj['rotation_y']] if vp_res else [rad2bin(obj['rotation_y'], bins)]

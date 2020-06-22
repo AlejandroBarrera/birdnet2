@@ -59,10 +59,12 @@ This demo uses data from the [KITTI Vision Benchmark Suite](http://www.cvlibs.ne
 |   |   |-- image
 |   |   |   |-- BEV KITTI {train,val} images
 |   |   |-- label
-|   |   |   |-- BEV KITTI {train,val} labels
+|   |   |   |-- KITTI {train,val} labels
 |   |   |-- calib
 |   |   |   |-- KITTI calibration files
 ```
+NOTE: In the current version, the *label* subfolder must contain the original KITTI annotations (*label_2*).
+
 3. Launch *python tools/train_net_BirdNetPlus.py --config_file Base-BirdNetPlus* with the parameters required inside of the configuration file. The annotations are generated automatically.
 4. For validation use *python tools/val_net_BirdNetPlus.py* instead with as many arguments as you want. Please review the arguments carefully. For the evaluation, we strongly recommend using an offline KITTI evaluator such as [eval_kitti](https://github.com/cguindel/eval_kitti) after obtaining the evaluation annotations.
 
