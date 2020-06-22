@@ -1,5 +1,18 @@
-import numpy as np
+"""
+Code from https://github.com/charlesq34/frustum-pointnets
 
+Copyright 2018 Charles R. Qi from Stanford University and
+Wei Liu from Nuro Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License")
+
+Helper methods for loading and parsing KITTI data.
+
+Author: Charles R. Qi
+Date: September 2017
+"""
+
+import numpy as np
 
 class Calibration(object):
 	''' Calibration matrices and utils
@@ -136,12 +149,12 @@ class Calibration(object):
 	def project_image_to_velo(self, uv_depth):
 		pts_3d_rect = self.project_image_to_rect(uv_depth)
 		return self.project_rect_to_velo(pts_3d_rect)
-		
+
 def read_label(label_filename):
     lines = [line.rstrip() for line in open(label_filename)]
     objects = [Object3d(line) for line in lines]
     return objects
-    
+
 def inverse_rigid_trans(Tr):
     ''' Inverse a rigid body transform matrix (3x4 as [R|t])
         [R'|-R't; 0|1]
