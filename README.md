@@ -4,7 +4,7 @@
 ![BEV detections example](val_images/BEV_000021.png)
 
 [BirdNet+](https://arxiv.org/abs/2003.04188) software implements a state-of-the-art 3D object detection algorithm based only on LiDAR technology. It represents a clear advance on its predecessor, the [BirdNet](https://arxiv.org/abs/1805.01195).
-Algorithm developed at [Intelligent Systems Laboratory](http://www.uc3m.es/islab), Universidad Carlos III de Madrid.
+Algorithm developed at the Universidad Carlos III de Madrid.
 
 ### What's New
 - The framework behind the algorithm is [Detectron2](https://github.com/facebookresearch/detectron2) in Pytorch.
@@ -73,11 +73,13 @@ NOTE: In the current version, the *label* subfolder must contain the original KI
 
 If you use BirdNet+ in your research, please cite our work using the following BibTeX entry.
 ```
-@misc{Barrera2020,
-    title = {{BirdNet+: End-to-End 3D Object Detection in LiDAR Bird's Eye View}},
-    author = {Barrera, Alejandro and Guindel, Carlos and Beltrán, Jorge and García, Fernando},
-    booktitle = {arXiv:2003.04188 [cs.CV]},
-    url = {http://arxiv.org/abs/2003.04188},
-    year = {2020}
+@article{barrera2021birdnet+,
+  title={BirdNet+: Two-Stage 3D Object Detection in LiDAR Through a Sparsity-Invariant Bird’s Eye View},
+  author={Barrera, Alejandro and Beltr{\'a}n, Jorge and Guindel, Carlos and Iglesias, Jos{\'e} Antonio and Garc{\'\i}a, Fernando},
+  journal={IEEE Access},
+  volume={9},
+  pages={160299--160316},
+  year={2021},
+  publisher={IEEE}
 }
 ```
